@@ -42,33 +42,27 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             <style>
                 .container {
                     font-family: Arial, sans-serif;
-                    padding: 20px;
-                }
-
-                h3 {
-                    margin-top: 0;
+                    padding: 10px;
                 }
 
                 input {
-                    width: 260px;
-                    padding: 10px;
-                    margin-bottom: 10px;
+                    width: 220px;
+                    padding: 7px;
+                    margin-right: 5px;
                 }
 
                 button {
-                    padding: 10px 18px;
+                    padding: 7px 12px;
                     cursor: pointer;
                 }
 
                 #status {
-                    margin-top: 15px;
-                    font-size: 13px;
+                    margin-top: 8px;
+                    font-size: 12px;
                 }
             </style>
 
             <div class="container">
-                <h3>WxCC Outdial Test</h3>
-
                 <input
                     id="phone"
                     type="tel"
@@ -76,14 +70,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     placeholder="Phone number"
                 />
 
-                <br>
-
                 <button id="testButton">
-                    Test SDK
+                    Test Outdial
                 </button>
 
                 <div id="status">
-                    Widget loaded. SDK not initialized yet.
+                    Loading...
                 </div>
             </div>
-        `}async connectedCallback(){let t=this.shadowRoot.getElementById(`status`),n=this.shadowRoot.getElementById(`testButton`);try{t.textContent=`Initializing WxCC Desktop SDK...`,await e.Desktop.config.init({widgetName:`wxcc-outdial-test`,widgetProvider:`Jubilee`}),t.textContent=`WxCC Desktop SDK initialized successfully.`,n.addEventListener(`click`,()=>{let e=this.shadowRoot.getElementById(`phone`).value;t.textContent=`SDK OK. Test number: `+e})}catch(e){console.error(`WxCC SDK initialization failed:`,e),t.textContent=`SDK initialization failed: `+(e?.message||String(e))}}};customElements.define(`wxcc-outdial-test`,t)})();
+        `}async connectedCallback(){let t=this.shadowRoot.getElementById(`status`),n=this.shadowRoot.getElementById(`testButton`);try{t.textContent=`Initializing WxCC Desktop SDK...`,await e.Desktop.config.init({widgetName:`wxcc-outdial-test`,widgetProvider:`Jubilee`}),t.textContent=`WxCC Desktop SDK initialized successfully.`,n.addEventListener(`click`,async()=>{try{let n=this.shadowRoot.getElementById(`phone`).value.trim();n.startsWith(`0`)&&(n=`+254`+n.substring(1)),t.textContent=`Starting outdial to `+n+`...`;let r=await e.Desktop.dialer.startOutdial({data:{entryPointId:`233e6bd0-700a-4a6d-89a3-885c81e05956`,destination:n,direction:`OUTBOUND`,origin:`+254709901000`,attributes:{},mediaType:`telephony`,outboundType:`OUTDIAL`}});console.log(`WxCC Outdial result:`,r),t.textContent=`Outdial request sent to `+n}catch(e){console.error(`WxCC Outdial failed:`,e),t.textContent=`Outdial failed: `+(e?.message||String(e))}})}catch(e){console.error(`WxCC SDK initialization failed:`,e),t.textContent=`SDK initialization failed: `+(e?.message||String(e))}}};customElements.define(`wxcc-outdial-test`,t)})();
